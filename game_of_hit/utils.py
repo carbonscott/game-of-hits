@@ -36,3 +36,52 @@ def read_log(file):
     ret_dict = { "kv" : kv_dict, "data" : tuple(data_dict.keys()) }
 
     return ret_dict
+
+
+
+
+class PerfMetric:
+    def __init__(self, res_dict):
+        self.res_dict = res_dict
+
+
+    def reduce_confusion(self, label):
+        ''' Given a label, reduce multiclass confusion matrix to binary
+            confusion matrix.
+        '''
+        res_dict    = self.res_dict
+        labels      = res_dict.keys()
+        labels_rest = [ i for i in labels if not i == label ]
+
+        # Early return if non-exist label is passed in...
+        if not label in labels: 
+            print(f"label {label} doesn't exist!!!")
+            return None
+
+        # Obtain true positive...
+        tp = len(res_dict[label][label])
+        fp = sum( [ len(res_dict[label][i]) for i in labels_rest ] )
+        tn = sum( sum( len(res_dict[i][j]) for j in labels_rest ) for i in labels_rest )
+        fn = sum( [ len(res_dict[i][label]) for i in labels_rest ] )
+
+        return tp, fp, tn, fn
+
+
+    def get_metrics(self, label):
+        # Early return if non-exist label is passed in...
+        confusion = self.reduce_confusion(label)
+        if confusion is None: return None
+
+        # Calculate metrics...
+        tp, fp, tn, fn = confusion
+        assert tp + fn > 0, "The result about one category is still missing, please work on more tests!!!"
+        assert tn + fp > 0, "The result about one category is still missing, please work on more tests!!!"
+
+        accuracy    = (tp + tn) / (tp + tn + fp + fn)
+        precision   = tp / (tp + fp)
+        recall      = tp / (tp + fn)
+        specificity = tn / (tn + fp) if tn + fp > 0 else None
+        f1_inv      = (1 / precision + 1 / recall)
+        f1          = 2 / f1_inv
+
+        return accuracy, precision, recall, specificity, f1

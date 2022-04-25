@@ -14,10 +14,12 @@ class DataManager:
 
         self.path_csv = config_data.path_csv
         self.path_log = config_data.path_log
+        self.username = config_data.username
 
         self.h5_handle_dict = self.get_h5_handler_from_csv()
         self.records        = self.get_records()
 
+        self.res_list = [ [i[0], None] for i in self.records ]    # Store results in list, modifiable by seq_idx
 
         self.KEY_TO_IMG = "photons"
 
@@ -77,3 +79,5 @@ class DataManager:
         img_norm = (img - np.mean(img)) / np.std(img)
 
         return img_norm
+
+

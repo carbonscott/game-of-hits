@@ -36,5 +36,6 @@ class ConfigData:
 
 
 config_data = ConfigData( path_csv = "/reg/data/ana03/scratch/cwang31/spi/simulated.pnccd_panel.v2.datasets.csv",
-                          path_log = "/reg/data/ana03/scratch/cwang31/spi/logs/2022_0423_0016_57.validate.query.test.log", )
+                          path_log = "/reg/data/ana03/scratch/cwang31/spi/logs/2022_0423_0016_57.validate.query.test.log", 
+                          username = os.environ.get('USER') )
 run(config_data)
