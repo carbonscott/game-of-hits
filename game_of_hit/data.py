@@ -18,7 +18,15 @@ class DataManager:
         self.h5_handle_dict = self.get_h5_handler_from_csv()
         self.records        = self.get_records()
 
+
         self.KEY_TO_IMG = "photons"
+
+
+    def get_timestamp(self):
+        basename = os.path.basename(self.path_log)
+        timestamp = basename[:basename.find(".")]
+
+        return timestamp
 
 
     def get_h5_handler_from_csv(self):

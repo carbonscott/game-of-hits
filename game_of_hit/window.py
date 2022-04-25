@@ -14,6 +14,8 @@ class Window(QtGui.QMainWindow):
         self.layout       = layout
         self.data_manager = data_manager
 
+        self.timestamp = self.data_manager.get_timestamp()
+
         self.num_qry = len(self.data_manager.records)
         self.num_cmp = len(self.data_manager.records[0]) - 1    # Discount the first image, which is a query
 
@@ -30,7 +32,7 @@ class Window(QtGui.QMainWindow):
     def config(self):
         self.setCentralWidget(self.layout.area)
         self.resize(1400, 700)
-        self.setWindowTitle('Game of Hit')
+        self.setWindowTitle(f"Game of Hit | Timestamp: {self.timestamp}")
 
         return None
 
@@ -55,12 +57,12 @@ class Window(QtGui.QMainWindow):
         self.layout.viewer_cmp.setImage(img_cmp, levels = [-1, 1])
         self.layout.viewer_qry.setHistogramRange(-1, 1)
         self.layout.viewer_cmp.setHistogramRange(-1, 1)
-        self.layout.viewer_qry.autoRange()
-        self.layout.viewer_cmp.autoRange()
+        self.layout.viewer_qry.getView().autoRange()
+        self.layout.viewer_cmp.getView().autoRange()
 
         # Display title...
-        self.layout.status_qry = QtGui.QLabel(f"Sequence number: {self.idx_qry}")
-        self.layout.status_cmp = QtGui.QLabel(f"Sampled image number: {self.idx_cmp}")
+        self.layout.viewer_qry.getView().setTitle(f"Sequence number: {self.idx_qry + 1}/{self.num_qry}")
+        self.layout.viewer_cmp.getView().setTitle(f"Sampled image number: {self.idx_cmp + 1}/{self.num_cmp}")
 
         return None
 
@@ -100,10 +102,11 @@ class Window(QtGui.QMainWindow):
         # Display images...
         self.layout.viewer_cmp.setImage(img_cmp, levels = [-1, 1])
         self.layout.viewer_cmp.setHistogramRange(-1, 1)
-        self.layout.viewer_cmp.autoRange()
+        ## self.layout.viewer_cmp.autoRange()
+        self.layout.viewer_cmp.getView().autoRange()
 
         # Display title...
-        self.layout.status_cmp = QtGui.QLabel(f"Sampled image number: {self.idx_cmp}")
+        self.layout.viewer_cmp.getView().setTitle(f"Sampled image number: {self.idx_cmp + 1}/{self.num_cmp}")
 
         return None
 

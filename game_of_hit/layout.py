@@ -4,7 +4,7 @@
 import os
 import sys
 
-from pyqtgraph          import LayoutWidget, ImageView
+from pyqtgraph          import LayoutWidget, ImageView, PlotItem
 from pyqtgraph.Qt       import QtGui
 from pyqtgraph.dockarea import DockArea, Dock
 
@@ -131,7 +131,7 @@ class MainLayout(QtGui.QWidget):
         ''' Display qry image.
         '''
         # Biolerplate code to start widget config
-        wdgt = ImageView()
+        wdgt = ImageView(view = PlotItem())
 
         ## img = np.random.normal(size = (100, 100))
         ## wdgt.setImg(img)
@@ -145,7 +145,7 @@ class MainLayout(QtGui.QWidget):
         ''' Display cmp image.
         '''
         # Biolerplate code to start widget config
-        wdgt = ImageView()
+        wdgt = ImageView(view = PlotItem())
 
         ## img = np.random.normal(size = (100, 100))
         ## wdgt.setImg(img)
