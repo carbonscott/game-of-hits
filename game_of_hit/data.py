@@ -24,6 +24,8 @@ class DataManager:
 
         self.KEY_TO_IMG = "photons"
 
+        self.img_trans_dict = {}
+
 
     def get_timestamp(self):
         basename = os.path.basename(self.path_log)
@@ -78,7 +80,12 @@ class DataManager:
         img = self.h5_handle_dict[basename][KEY_TO_IMG][int(seq_idx)][int(panel_idx)]
 
         if self.trans is not None:
-            img = self.trans(img, id_panel = int(panel_idx))
+            k = base, seq_idx, panel_idx, label
+            if not k in self.img_trans_dict:
+                img = self.trans(img, id_panel = int(panel_idx))
+                self.img_trans_dict[k] = img
+            else:
+                img = self.img_trans_dict[k]
 
         img_norm = (img - np.mean(img)) / np.std(img)
 
