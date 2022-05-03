@@ -1,6 +1,6 @@
 # Game of Hit
 
-![](./figures/goh.png)
+![](./figures/goh.query.png)
 
 A GUI for measuring SPI classification performance of human. 
 
@@ -22,4 +22,5 @@ numpy
 
 ## To do
 
-- [ ] Apply preprocess to images.
+- [x] Apply preprocess to images.
+- [ ] Record a player's status
