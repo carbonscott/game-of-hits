@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import numpy as np
+import skimage.measure as sm
 
 def read_log(file):
     '''Return all lines in the user supplied parameter file without comments.
@@ -85,3 +87,22 @@ class PerfMetric:
         f1          = 2 / f1_inv
 
         return accuracy, precision, recall, specificity, f1
+
+
+
+
+def downsample(assem, bin_row=2, bin_col=2, mask=None):
+    """ Downsample an SPI image.  
+        Adopted from https://github.com/chuckie82/DeepProjection/blob/master/DeepProjection/utils.py
+    """
+    if mask is None:
+        combinedMask = np.ones_like(assem)
+    else:
+        combinedMask = mask
+    downCalib  = sm.block_reduce(assem       , block_size=(bin_row, bin_col), func=np.sum)
+    downWeight = sm.block_reduce(combinedMask, block_size=(bin_row, bin_col), func=np.sum)
+    warr       = np.zeros_like(downCalib, dtype='float32')
+    ind        = np.where(downWeight > 0)
+    warr[ind]  = downCalib[ind] / downWeight[ind]
+
+    return warr

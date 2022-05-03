@@ -56,10 +56,10 @@ class Window(QtGui.QMainWindow):
         img_cmp    = self.data_manager.get_img_by_record(record_cmp)
 
         # Display images...
-        self.layout.viewer_qry.setImage(img_qry, levels = [-1, 1])
-        self.layout.viewer_cmp.setImage(img_cmp, levels = [-1, 1])
-        self.layout.viewer_qry.setHistogramRange(-1, 1)
-        self.layout.viewer_cmp.setHistogramRange(-1, 1)
+        self.layout.viewer_qry.setImage(img_qry, levels = [0, 1])
+        self.layout.viewer_cmp.setImage(img_cmp, levels = [0, 1])
+        self.layout.viewer_qry.setHistogramRange(0, 1)
+        self.layout.viewer_cmp.setHistogramRange(0, 1)
         self.layout.viewer_qry.getView().autoRange()
         self.layout.viewer_cmp.getView().autoRange()
 
@@ -111,8 +111,8 @@ class Window(QtGui.QMainWindow):
         img_cmp    = self.data_manager.get_img_by_record(record_cmp)
 
         # Display images...
-        self.layout.viewer_cmp.setImage(img_cmp, levels = [-1, 1])
-        self.layout.viewer_cmp.setHistogramRange(-1, 1)
+        self.layout.viewer_cmp.setImage(img_cmp, levels = [0, 1])
+        self.layout.viewer_cmp.setHistogramRange(0, 1)
         ## self.layout.viewer_cmp.autoRange()
         self.layout.viewer_cmp.getView().autoRange()
 
