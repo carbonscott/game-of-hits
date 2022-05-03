@@ -1,8 +1,9 @@
-from . import gui, layout, window
+from . import data, layout, window, utils
 
 __all__ = [
-            "gui", 
+            "data", 
             "layout", 
             "window", 
+            "utils",
 ]
 

@@ -15,6 +15,7 @@ class DataManager:
         self.path_csv = config_data.path_csv
         self.path_log = config_data.path_log
         self.username = config_data.username
+        self.trans    = config_data.trans
 
         self.h5_handle_dict = self.get_h5_handler_from_csv()
         self.records        = self.get_records()
@@ -75,6 +76,9 @@ class DataManager:
         basename = (base, label)
         KEY_TO_IMG = self.KEY_TO_IMG
         img = self.h5_handle_dict[basename][KEY_TO_IMG][int(seq_idx)][int(panel_idx)]
+
+        if self.trans is not None:
+            img = self.trans(img, id_panel = int(panel_idx))
 
         img_norm = (img - np.mean(img)) / np.std(img)
 
