@@ -1,8 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import random
 import numpy as np
 import skimage.measure as sm
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+
+    return None
+
 
 def read_log(file):
     '''Return all lines in the user supplied parameter file without comments.

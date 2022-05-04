@@ -7,7 +7,7 @@ import h5py
 import numpy as np
 import random
 
-from game_of_hit.utils  import read_log
+from game_of_hit.utils  import read_log, set_seed
 
 class DataManager:
     def __init__(self, config_data):
@@ -17,6 +17,9 @@ class DataManager:
         self.path_log = config_data.path_log
         self.username = config_data.username
         self.trans    = config_data.trans
+        self.seed     = config_data.seed
+
+        set_seed(self.seed)
 
         self.h5_handle_dict = self.get_h5_handler_from_csv()
         self.records        = self.get_records()
@@ -26,6 +29,7 @@ class DataManager:
         self.KEY_TO_IMG = "photons"
 
         self.img_trans_dict = {}
+        self.state_random   = [random.getstate(), np.random.get_state()]
 
 
     def get_timestamp(self):
@@ -73,6 +77,18 @@ class DataManager:
         return records
 
 
+    def save_random_state(self):
+        self.state_random = (random.getstate(), np.random.get_state())
+
+        return None
+
+
+    def set_random_state(self):
+        state_random, state_numpy = self.state_random
+        random.setstate(state_random)
+        np.random.set_state(state_numpy)
+
+
     def get_img_by_record(self, record):
         base, seq_idx, panel_idx, label = record.split()
 
@@ -90,12 +106,12 @@ class DataManager:
 
             # Save random state...
             if not k in self.img_trans_dict:
-                self.img_trans_dict[k] = (random.getstate(), np.random.get_state())
-
-            # Access the random state...
-            state_random, state_numpy = self.img_trans_dict[k]
-            random.setstate(state_random)
-            np.random.set_state(state_numpy)
+                self.save_random_state()
+                self.img_trans_dict[k] = self.state_random
+            else:
+                # Access the random state...
+                self.state_random = self.img_trans_dict[k]
+                self.set_random_state()
 
             # Process image with the right random state...
             img = self.trans(img, id_panel = int(panel_idx))

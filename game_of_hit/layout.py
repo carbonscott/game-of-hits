@@ -87,6 +87,7 @@ class MainLayout(QtGui.QWidget):
         btn_prev = QtGui.QPushButton('Prev')
         btn_next = QtGui.QPushButton('Next')
         btn_perf = QtGui.QPushButton('Calculate performance')
+        btn_save = QtGui.QPushButton('Save state')
 
         wdgt.addWidget(btn_prev, row = 0, col = 0)
         wdgt.addWidget(btn_next, row = 0, col = 1)
@@ -106,7 +107,8 @@ class MainLayout(QtGui.QWidget):
         # Set up buttons...
         btn_prev = QtGui.QPushButton('Prev')
         btn_next = QtGui.QPushButton('Next')
-        btn_chos = QtGui.QPushButton('Choose it')
+        btn_chos = QtGui.QPushButton('Choose')
+        btn_load = QtGui.QPushButton('Load state')
 
         wdgt.addWidget(btn_prev, row = 0, col = 0)
         wdgt.addWidget(btn_next, row = 0, col = 1)

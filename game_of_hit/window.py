@@ -3,14 +3,19 @@
 
 import os
 import sys
+import pickle
 
 from pyqtgraph    import LabelItem
-from pyqtgraph.Qt import QtGui
+from pyqtgraph.Qt import QtGui, QtWidgets
 from game_of_hit.utils import PerfMetric
 
 class Window(QtGui.QMainWindow):
     def __init__(self, layout, data_manager):
         super().__init__()
+
+        self.createAction()
+        self.createMenuBar()
+        self.connectAction()
 
         self.layout       = layout
         self.data_manager = data_manager
@@ -222,3 +227,81 @@ class Window(QtGui.QMainWindow):
         for msg in msgs:
             print(msg)
 
+
+    def saveState(self):
+        timestamp = self.timestamp
+
+        drc_state = os.path.join(os.getcwd(), "state")
+        if not os.path.exists(drc_state): os.makedirs(drc_state)
+
+        fl_pickle = f"{timestamp}.pickle"
+        path_pickle = os.path.join(drc_state, fl_pickle)
+        if os.path.exists(path_pickle): os.remove(path_pickle)
+
+        obj_to_save = ( self.data_manager.img_trans_dict,
+                        self.data_manager.state_random,
+                        self.data_manager.res_list,
+                        self.idx_qry )
+
+        with open(path_pickle, 'wb') as fh:
+            pickle.dump(obj_to_save, fh, protocol = pickle.HIGHEST_PROTOCOL)
+
+        print(f"State saved...")
+
+        return None
+
+
+    def loadState(self):
+        timestamp = self.timestamp
+
+        drc_state = os.path.join(os.getcwd(), "state")
+        if not os.path.exists(drc_state): os.makedirs(drc_state)
+
+        fl_pickle = f"{timestamp}.pickle"
+        path_pickle = os.path.join(drc_state, fl_pickle)
+
+        with open(path_pickle, 'rb') as fh:
+            obj_saved = pickle.load(fh)
+            self.data_manager.img_trans_dict = obj_saved[0]
+            self.data_manager.state_random   = obj_saved[1]
+            self.data_manager.res_list       = obj_saved[2]
+            self.idx_qry                     = obj_saved[3]
+
+        self.goEvent()
+
+        return None
+
+
+    def goEvent(self):
+        self.dispImg()
+
+        # Restore the idx to cmp back to 0...
+        self.idx_cmp = 0
+
+        return None
+
+
+    def createMenuBar(self):
+        menuBar = self.menuBar()
+
+        fileMenu = QtWidgets.QMenu("&File", self)
+        menuBar.addMenu(fileMenu)
+
+        fileMenu.addAction(self.saveAction)
+        fileMenu.addAction(self.loadAction)
+
+        ## saveMenu = menuBar.addMenu("&Save state")
+        ## loadMenu = menuBar.addMenu("&Load state")
+
+
+    def createAction(self):
+        self.saveAction = QtWidgets.QAction(self)
+        self.saveAction.setText("&Save State")
+
+        self.loadAction = QtWidgets.QAction(self)
+        self.loadAction.setText("&Load State")
+
+
+    def connectAction(self):
+        self.saveAction.triggered.connect(self.saveState)
+        self.loadAction.triggered.connect(self.loadState)
