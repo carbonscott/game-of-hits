@@ -5,6 +5,7 @@ import os
 import csv
 import h5py
 import numpy as np
+import random
 
 from game_of_hit.utils  import read_log
 
@@ -81,11 +82,23 @@ class DataManager:
 
         if self.trans is not None:
             k = base, seq_idx, panel_idx, label
+            ## if not k in self.img_trans_dict:
+            ##     img = self.trans(img, id_panel = int(panel_idx))
+            ##     self.img_trans_dict[k] = img
+            ## else:
+            ##     img = self.img_trans_dict[k]
+
+            # Save random state...
             if not k in self.img_trans_dict:
-                img = self.trans(img, id_panel = int(panel_idx))
-                self.img_trans_dict[k] = img
-            else:
-                img = self.img_trans_dict[k]
+                self.img_trans_dict[k] = (random.getstate(), np.random.get_state())
+
+            # Access the random state...
+            state_random, state_numpy = self.img_trans_dict[k]
+            random.setstate(state_random)
+            np.random.set_state(state_numpy)
+
+            # Process image with the right random state...
+            img = self.trans(img, id_panel = int(panel_idx))
 
         img_norm = (img - np.mean(img)) / np.std(img)
 
