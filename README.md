@@ -23,4 +23,4 @@ numpy
 ## To do
 
 - [x] Apply preprocess to images.
-- [ ] Record a player's status
+- [x] Record a player's status
