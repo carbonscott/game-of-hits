@@ -45,6 +45,20 @@ class Window(QtGui.QMainWindow):
         return None
 
 
+    def setupButtonFunction(self):
+        self.layout.btn_next_qry.clicked.connect(self.nextQry)
+        self.layout.btn_prev_qry.clicked.connect(self.prevQry)
+        self.layout.btn_next_cmp.clicked.connect(self.nextCmp)
+        self.layout.btn_prev_cmp.clicked.connect(self.prevCmp)
+        self.layout.btn_perf.clicked.connect(self.dispPerf)
+        self.layout.btn_chos.clicked.connect(self.updateRes)
+
+        return None
+
+
+    ###############
+    ### DIPSLAY ###
+    ###############
     def dispImg(self):
         # Let idx_qry bound within reasonable range....
         self.idx_qry = min(max(0, self.idx_qry), self.num_qry - 1)
@@ -75,35 +89,6 @@ class Window(QtGui.QMainWindow):
         return None
 
 
-    def setupButtonFunction(self):
-        self.layout.btn_next_qry.clicked.connect(self.nextQry)
-        self.layout.btn_prev_qry.clicked.connect(self.prevQry)
-        self.layout.btn_next_cmp.clicked.connect(self.nextCmp)
-        self.layout.btn_prev_cmp.clicked.connect(self.prevCmp)
-        self.layout.btn_perf.clicked.connect(self.dispPerf)
-        self.layout.btn_chos.clicked.connect(self.updateRes)
-
-
-    def nextQry(self):
-        self.idx_qry = min(self.num_qry - 1, self.idx_qry + 1)    # Right bound
-        self.dispImg()
-
-        # Restore the idx to cmp back to 0...
-        self.idx_cmp = 0
-
-        return None
-
-
-    def prevQry(self):
-        self.idx_qry = max(0, self.idx_qry - 1)    # Left bound
-        self.dispImg()
-
-        # Restore the idx to cmp back to 0...
-        self.idx_cmp = 0
-
-        return None
-
-
     def dispCmp(self):
         # Let idx_cmp bound within reasonable range....
         self.idx_cmp = min(max(0, self.idx_cmp), self.num_cmp - 1)
@@ -127,6 +112,29 @@ class Window(QtGui.QMainWindow):
         return None
 
 
+    ##################
+    ### NAVIGATION ###
+    ##################
+    def nextQry(self):
+        self.idx_qry = min(self.num_qry - 1, self.idx_qry + 1)    # Right bound
+        self.dispImg()
+
+        # Restore the idx to cmp back to 0...
+        self.idx_cmp = 0
+
+        return None
+
+
+    def prevQry(self):
+        self.idx_qry = max(0, self.idx_qry - 1)    # Left bound
+        self.dispImg()
+
+        # Restore the idx to cmp back to 0...
+        self.idx_cmp = 0
+
+        return None
+
+
     def nextCmp(self):
         self.idx_cmp = min(self.num_cmp - 1, self.idx_cmp + 1)    # Right bound
         self.dispCmp()
@@ -141,11 +149,14 @@ class Window(QtGui.QMainWindow):
         return None
 
 
+    ###########################
+    ### MEASURE PERFORMANCE ###
+    ###########################
     def updateRes(self):
         res = self.data_manager.records[self.idx_qry][self.idx_cmp_offset + self.idx_cmp]
         self.data_manager.res_list[self.idx_qry][1] = res
 
-        ## print(self.data_manager.res_list[self.idx_qry])
+        return None
 
 
     def initPerf(self):
@@ -227,7 +238,12 @@ class Window(QtGui.QMainWindow):
         for msg in msgs:
             print(msg)
 
+        return None
 
+
+    ######################################
+    ### SAVE AND RESTORE GAME PROGRESS ###
+    ######################################
     def saveState(self):
         timestamp = self.timestamp
 
@@ -290,8 +306,7 @@ class Window(QtGui.QMainWindow):
         fileMenu.addAction(self.saveAction)
         fileMenu.addAction(self.loadAction)
 
-        ## saveMenu = menuBar.addMenu("&Save state")
-        ## loadMenu = menuBar.addMenu("&Load state")
+        return None
 
 
     def createAction(self):
@@ -301,7 +316,11 @@ class Window(QtGui.QMainWindow):
         self.loadAction = QtWidgets.QAction(self)
         self.loadAction.setText("&Load State")
 
+        return None
+
 
     def connectAction(self):
         self.saveAction.triggered.connect(self.saveState)
         self.loadAction.triggered.connect(self.loadState)
+
+        return None
