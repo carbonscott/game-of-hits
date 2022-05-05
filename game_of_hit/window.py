@@ -5,8 +5,8 @@ import os
 import sys
 import pickle
 
-from pyqtgraph    import LabelItem
-from pyqtgraph.Qt import QtGui, QtWidgets
+from pyqtgraph         import LabelItem
+from pyqtgraph.Qt      import QtGui, QtWidgets, QtCore
 from game_of_hit.utils import PerfMetric
 
 class Window(QtGui.QMainWindow):
@@ -31,6 +31,7 @@ class Window(QtGui.QMainWindow):
         self.idx_cmp_offset = 1
 
         self.setupButtonFunction()
+        self.setupButtonShortcut()
 
         self.dispImg()
 
@@ -52,6 +53,20 @@ class Window(QtGui.QMainWindow):
         self.layout.btn_prev_cmp.clicked.connect(self.prevCmp)
         self.layout.btn_perf.clicked.connect(self.dispPerf)
         self.layout.btn_chos.clicked.connect(self.updateRes)
+
+        return None
+
+
+    def setupButtonShortcut(self):
+        # w/ buttons
+        self.layout.btn_next_qry.setShortcut("J")
+        self.layout.btn_prev_qry.setShortcut("K")
+        self.layout.btn_next_cmp.setShortcut("L")
+        self.layout.btn_prev_cmp.setShortcut("H")
+        self.layout.btn_chos.setShortcut("C")
+
+        # w/o buttons
+        QtGui.QShortcut(QtCore.Qt.Key_G, self, self.goEventDialog)
 
         return None
 
@@ -156,6 +171,8 @@ class Window(QtGui.QMainWindow):
         res = self.data_manager.records[self.idx_qry][self.idx_cmp_offset + self.idx_cmp]
         self.data_manager.res_list[self.idx_qry][1] = res
 
+        print(f"Choice made for event {self.idx_qry + 1}")
+
         return None
 
 
@@ -244,7 +261,44 @@ class Window(QtGui.QMainWindow):
     ######################################
     ### SAVE AND RESTORE GAME PROGRESS ###
     ######################################
+    def saveStateDialog(self):
+        path_pickle = QtGui.QFileDialog.getSaveFileName(self, 'Save File', f'{self.timestamp}.pickle')[0]
+
+        if os.path.exists(path_pickle):
+            obj_to_save = ( self.data_manager.img_trans_dict,
+                            self.data_manager.state_random,
+                            self.data_manager.res_list,
+                            self.idx_qry,
+                            self.timestamp )
+
+            with open(path_pickle, 'wb') as fh:
+                pickle.dump(obj_to_save, fh, protocol = pickle.HIGHEST_PROTOCOL)
+
+            print(f"State saved")
+
+        return None
+
+
+    def loadStateDialog(self):
+        path_pickle = QtGui.QFileDialog.getOpenFileName(self, 'Save File')[0]
+
+        if os.path.exists(path_pickle):
+            with open(path_pickle, 'rb') as fh:
+                obj_saved = pickle.load(fh)
+                self.data_manager.img_trans_dict = obj_saved[0]
+                self.data_manager.state_random   = obj_saved[1]
+                self.data_manager.res_list       = obj_saved[2]
+                self.idx_qry                     = obj_saved[3]
+                self.timestamp                   = obj_saved[4]
+
+            self.goEvent()
+
+        return None
+
+
     def saveState(self):
+        ''' Deprecate.
+        '''
         timestamp = self.timestamp
 
         drc_state = os.path.join(os.getcwd(), "state")
@@ -262,12 +316,14 @@ class Window(QtGui.QMainWindow):
         with open(path_pickle, 'wb') as fh:
             pickle.dump(obj_to_save, fh, protocol = pickle.HIGHEST_PROTOCOL)
 
-        print(f"State saved...")
+        print(f"State saved")
 
         return None
 
 
     def loadState(self):
+        ''' Deprecate.
+        '''
         timestamp = self.timestamp
 
         drc_state = os.path.join(os.getcwd(), "state")
@@ -282,6 +338,7 @@ class Window(QtGui.QMainWindow):
             self.data_manager.state_random   = obj_saved[1]
             self.data_manager.res_list       = obj_saved[2]
             self.idx_qry                     = obj_saved[3]
+            self.timestamp                   = obj_saved[4]
 
         self.goEvent()
 
@@ -297,14 +354,38 @@ class Window(QtGui.QMainWindow):
         return None
 
 
+    def goEventDialog(self):
+        idx, is_ok = QtGui.QInputDialog.getText(self, "Enter the event number to go", "Enter the event number to go")
+
+        if is_ok:
+            self.idx_qry = int(idx) - 1    # seqi to python 0-based idx
+
+            # Bound idx within a reasonable range
+            self.idx_qry = min(max(0, self.idx_qry), self.num_qry - 1)
+
+            self.dispImg()
+
+            # Restore the idx to cmp back to 0...
+            self.idx_cmp = 0
+
+        return None
+
+
     def createMenuBar(self):
         menuBar = self.menuBar()
 
+        # File menu
         fileMenu = QtWidgets.QMenu("&File", self)
         menuBar.addMenu(fileMenu)
 
         fileMenu.addAction(self.saveAction)
         fileMenu.addAction(self.loadAction)
+
+        # Go menu
+        goMenu = QtWidgets.QMenu("&Go", self)
+        menuBar.addMenu(goMenu)
+
+        goMenu.addAction(self.goAction)
 
         return None
 
@@ -316,11 +397,36 @@ class Window(QtGui.QMainWindow):
         self.loadAction = QtWidgets.QAction(self)
         self.loadAction.setText("&Load State")
 
+        self.goAction = QtWidgets.QAction(self)
+        self.goAction.setText("&Event")
+
         return None
 
 
     def connectAction(self):
-        self.saveAction.triggered.connect(self.saveState)
-        self.loadAction.triggered.connect(self.loadState)
+        self.saveAction.triggered.connect(self.saveStateDialog)
+        self.loadAction.triggered.connect(self.loadStateDialog)
+
+        self.goAction.triggered.connect(self.goEventDialog)
 
         return None
+
+
+    #########################
+    ### Keyboard shortcut ###
+    #########################
+    ## def keyPressEvent(self, event):
+    ##     super().keyPressEvent(event)
+
+    ##     if type(event) == QtGui.QKeyEvent:
+    ##         if event.key() == QtCore.Qt.Key_Down : self.nextQry()
+    ##         if event.key() == QtCore.Qt.Key_Up   : self.prevQry()
+    ##         if event.key() == QtCore.Qt.Key_Right: self.nextCmp()
+    ##         if event.key() == QtCore.Qt.Key_Left : self.prevCmp()
+
+    ##         if event.key() == QtCore.Qt.Key_J: self.nextQry()
+    ##         if event.key() == QtCore.Qt.Key_K: self.prevQry()
+    ##         if event.key() == QtCore.Qt.Key_L: self.nextCmp()
+    ##         if event.key() == QtCore.Qt.Key_H: self.prevCmp()
+
+    ##         if event.key() == QtCore.Qt.Key_C: self.updateRes()
