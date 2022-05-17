@@ -7,7 +7,7 @@ import h5py
 import numpy as np
 import random
 
-from game_of_hit.utils  import read_log, set_seed
+from game_of_hits.utils  import read_log, set_seed
 
 class DataManager:
     def __init__(self, config_data):

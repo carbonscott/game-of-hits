@@ -6,9 +6,9 @@ import sys
 
 from pyqtgraph.Qt import QtGui
 
-from game_of_hit.layout import MainLayout
-from game_of_hit.window import Window
-from game_of_hit.data   import DataManager
+from game_of_hits.layout import MainLayout
+from game_of_hits.window import Window
+from game_of_hits.data   import DataManager
 
 from simulated_pnccd_panel_preprocess import DatasetPreprocess
 import socket

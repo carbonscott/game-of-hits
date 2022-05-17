@@ -7,7 +7,7 @@ import pickle
 
 from pyqtgraph         import LabelItem
 from pyqtgraph.Qt      import QtGui, QtWidgets, QtCore
-from game_of_hit.utils import PerfMetric
+from game_of_hits.utils import PerfMetric
 
 class Window(QtGui.QMainWindow):
     def __init__(self, layout, data_manager):
@@ -262,9 +262,9 @@ class Window(QtGui.QMainWindow):
     ### SAVE AND RESTORE GAME PROGRESS ###
     ######################################
     def saveStateDialog(self):
-        path_pickle = QtGui.QFileDialog.getSaveFileName(self, 'Save File', f'{self.timestamp}.pickle')[0]
+        path_pickle, is_ok = QtGui.QFileDialog.getSaveFileName(self, 'Save File', f'{self.timestamp}.pickle')
 
-        if os.path.exists(path_pickle):
+        if is_ok:
             obj_to_save = ( self.data_manager.img_trans_dict,
                             self.data_manager.state_random,
                             self.data_manager.res_list,
@@ -280,9 +280,9 @@ class Window(QtGui.QMainWindow):
 
 
     def loadStateDialog(self):
-        path_pickle = QtGui.QFileDialog.getOpenFileName(self, 'Save File')[0]
+        path_pickle, is_ok = QtGui.QFileDialog.getOpenFileName(self, 'Save File')
 
-        if os.path.exists(path_pickle):
+        if is_ok and os.path.exists(path_pickle):
             with open(path_pickle, 'rb') as fh:
                 obj_saved = pickle.load(fh)
                 self.data_manager.img_trans_dict = obj_saved[0]
@@ -378,8 +378,8 @@ class Window(QtGui.QMainWindow):
         fileMenu = QtWidgets.QMenu("&File", self)
         menuBar.addMenu(fileMenu)
 
-        fileMenu.addAction(self.saveAction)
         fileMenu.addAction(self.loadAction)
+        fileMenu.addAction(self.saveAction)
 
         # Go menu
         goMenu = QtWidgets.QMenu("&Go", self)
@@ -391,11 +391,11 @@ class Window(QtGui.QMainWindow):
 
 
     def createAction(self):
-        self.saveAction = QtWidgets.QAction(self)
-        self.saveAction.setText("&Save State")
-
         self.loadAction = QtWidgets.QAction(self)
         self.loadAction.setText("&Load State")
+
+        self.saveAction = QtWidgets.QAction(self)
+        self.saveAction.setText("&Save State")
 
         self.goAction = QtWidgets.QAction(self)
         self.goAction.setText("&Event")

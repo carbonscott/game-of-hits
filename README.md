@@ -1,4 +1,4 @@
-# Game of Hit
+# Game of Hits
 
 ![](./figures/goh.query.png)
 
@@ -8,7 +8,7 @@ A GUI for measuring SPI classification performance of human.
 ## Install with `pip`
 
 ```
-pip install git+https://github.com/carbonscott/game_of_hit --upgrade --user
+pip install git+https://github.com/carbonscott/game_of_hits --upgrade --user
 ```
 
 
