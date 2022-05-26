@@ -11,7 +11,7 @@ setuptools.setup(
     description="A game in which users need to identify hits of SPI images.  ",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/carbonscott/game_of_hits",
+    url="https://github.com/carbonscott/game-of-hits",
     keywords = ['Single particle imaging', 'Human baseline'],
     packages=setuptools.find_packages(),
     classifiers=[
